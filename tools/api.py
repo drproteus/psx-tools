@@ -1,6 +1,6 @@
 """
-search_title_id.py
-------------------
+api.py
+------
 
 Search for game information using its title ID.
 """
