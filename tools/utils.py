@@ -13,13 +13,21 @@ def cache_request(fn, *args, **kwargs):
         cache_name = os.path.join(
             CACHE_DIR, "+".join([fn.__name__, str(args), str(kwargs)]) + ".json"
         )
-        if os.path.exists(cache_name):
-            with open(cache_name, "r") as f:
-                return json.load(f)
+        try:
+            if os.path.exists(cache_name):
+                with open(cache_name, "r") as f:
+                    return json.load(f)
+        except Exception:
+            # Couldn't write, possible bad filename.
+            pass
         data = fn(*args, **kwargs)
         if data:
-            with open(cache_name, "w") as f:
-                json.dump(data, f)
+            try:
+                with open(cache_name, "w") as f:
+                    json.dump(data, f)
+            except Exception:
+                # Couldn't write, possible bad filename.
+                pass
         return data
 
     return wrapped
