@@ -11,26 +11,27 @@ for each (folder of bin/cue):
 """
 
 import os
+import pathlib
 import sys
 
 DISC_SUBDIR = ".discs"
 
 
-def write_playlist_files_for_discs(current_dir):
-    titles = os.listdir(os.path.join(current_dir, ".discs"))
+def write_playlist_files_for_discs(_current_dir: str):
+    titles = os.listdir(os.path.join(_current_dir, ".discs"))
     disc_cue_map = {}
     for title in titles:
+        _path = os.path.join(_current_dir, ".discs", title)
+        if not pathlib.Path(_path).is_dir():
+            print(f"Not a disc directory: {title}", file=sys.stderr)
+            continue
         print(title)
-        disc_cue_map[title] = [
-            df
-            for df in os.listdir(os.path.join(current_dir, ".discs", title))
-            if df.endswith(".cue")
-        ]
+        disc_cue_map[title] = [df for df in os.listdir(_path) if df.endswith(".cue")]
 
     for title, cues in disc_cue_map.items():
         m3u_content = "\n".join([f".discs/{title}/{cue}" for cue in cues])
         filename = f"{title}.m3u"
-        with open(os.path.join(current_dir, filename), "w") as f:
+        with open(os.path.join(_current_dir, filename), "w") as f:
             f.write(m3u_content)
 
 
